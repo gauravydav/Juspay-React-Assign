@@ -20,7 +20,6 @@ export default function PreviewArea({
   const stageRef = useRef(null);
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
 
-  // Measure the stage so we can clamp sprites near the edges symmetrically
   useEffect(() => {
     const updateSize = () => {
       if (!stageRef.current) return;
@@ -34,15 +33,13 @@ export default function PreviewArea({
   }, []);
 
   const clampPosition = (pos) => {
-    // If we don't yet know the stage size, just return the original position
     if (!stageSize.width || !stageSize.height) {
       return pos;
     }
 
-    // Approximate sprite size and how much should stay visible at the edge
     const SPRITE_WIDTH = 100;
     const SPRITE_HEIGHT = 100;
-    const VISIBLE_MARGIN = 20; // pixels that always stay visible
+    const VISIBLE_MARGIN = 20;
 
     const MIN_X = -SPRITE_WIDTH + VISIBLE_MARGIN;
     const MAX_X = stageSize.width - VISIBLE_MARGIN;
@@ -54,7 +51,6 @@ export default function PreviewArea({
     };
   };
 
-  // Initialise positions, angles and visual state when sprites change
   useEffect(() => {
     const pos = {};
     sprites.forEach((s) => {
@@ -83,7 +79,6 @@ export default function PreviewArea({
     });
   }, [sprites]);
 
-  // Reset collision and one-shot execution flags when play toggles
   useEffect(() => {
     hasSwappedRef.current = false;
     if (play) {
@@ -91,7 +86,6 @@ export default function PreviewArea({
     }
   }, [play]);
 
-  // Handle say / think timed bubbles
   useEffect(() => {
     if (!play) {
       setBubbles({});
@@ -117,7 +111,7 @@ export default function PreviewArea({
                   message: block.message || "",
                 },
               }));
-            }, start)
+            }, start),
           );
 
           timeouts.push(
@@ -126,7 +120,7 @@ export default function PreviewArea({
                 ...prev,
                 [sprite.id]: null,
               }));
-            }, end)
+            }, end),
           );
 
           currentTime = end;
@@ -139,7 +133,6 @@ export default function PreviewArea({
     };
   }, [play, sprites]);
 
-  // Motion, looks effects and collision / hero feature
   useEffect(() => {
     if (!play) return;
 
@@ -155,10 +148,9 @@ export default function PreviewArea({
           }
 
           const hasRepeat = s.animations.some(
-            (block) => block.type === "repeat"
+            (block) => block.type === "repeat",
           );
 
-          // For scripts without a repeat block, run motion only once
           if (!hasRepeat && hasRunOnceRef.current[s.id]) {
             return;
           }
@@ -180,7 +172,6 @@ export default function PreviewArea({
             }
           });
 
-          // Prevent sprites from disappearing completely off-screen
           newPos[s.id] = clampPosition(newPos[s.id]);
 
           if (angleDelta !== 0) {
@@ -192,7 +183,6 @@ export default function PreviewArea({
           }
         });
 
-        // Collision check (hero feature)
         const keys = Object.keys(newPos);
         if (!hasSwappedRef.current && keys.length >= 2) {
           for (let i = 0; i < keys.length; i++) {
@@ -201,13 +191,9 @@ export default function PreviewArea({
               const id2 = parseInt(keys[j], 10);
               const p1 = newPos[id1];
               const p2 = newPos[id2];
-              if (
-                Math.abs(p1.x - p2.x) < 40 &&
-                Math.abs(p1.y - p2.y) < 40
-              ) {
+              if (Math.abs(p1.x - p2.x) < 40 && Math.abs(p1.y - p2.y) < 40) {
                 swapAnimations(id1, id2);
                 hasSwappedRef.current = true;
-                // Highlight colliding sprites briefly so the swap is visible
                 if (collisionTimeoutRef.current) {
                   clearTimeout(collisionTimeoutRef.current);
                 }
@@ -246,24 +232,22 @@ export default function PreviewArea({
         });
       }
 
-      // Looks effects: show/hide, color, size
       setVisual((prevVisual) => {
         const next = { ...prevVisual };
 
         sprites.forEach((s) => {
           const hasRepeat = s.animations.some(
-            (block) => block.type === "repeat"
+            (block) => block.type === "repeat",
           );
           if (!hasRepeat && hasRunOnceRef.current[s.id]) {
             return;
           }
 
-          const current =
-            next[s.id] || {
-              visible: true,
-              size: 100,
-              color: 0,
-            };
+          const current = next[s.id] || {
+            visible: true,
+            size: 100,
+            color: 0,
+          };
           let v = { ...current };
 
           s.animations.forEach((block) => {
@@ -303,14 +287,17 @@ export default function PreviewArea({
     return () => clearInterval(interval);
   }, [play, sprites, swapAnimations]);
 
-  // Apply instant effects coming from sidebar clicks (works even when not playing)
+  // This Applies instant effects coming from sidebar clicks
   useEffect(() => {
     if (!instantEffect) return;
     const { spriteId, block } = instantEffect;
     if (!spriteId || !block) return;
 
-    // Instant motion: move / turn / goto apply once immediately
-    if (block.type === "move" || block.type === "turn" || block.type === "goto") {
+    if (
+      block.type === "move" ||
+      block.type === "turn" ||
+      block.type === "goto"
+    ) {
       setPositions((prev) => {
         const current = prev[spriteId] || { x: 0, y: 0 };
         const next = { ...prev };
@@ -323,7 +310,6 @@ export default function PreviewArea({
 
         if (block.type === "turn") {
           const degrees = block.degrees ?? 0;
-          // only rotation is handled by angles below
           setAngles((prevAngles) => {
             const copy = { ...prevAngles };
             const currentAngle = copy[spriteId] ?? 0;
@@ -342,7 +328,6 @@ export default function PreviewArea({
       });
     }
 
-    // Instant looks: color, size, show/hide, clear
     if (
       [
         "show",
@@ -355,8 +340,11 @@ export default function PreviewArea({
       ].includes(block.type)
     ) {
       setVisual((prev) => {
-        const current =
-          prev[spriteId] || { visible: true, size: 100, color: 0 };
+        const current = prev[spriteId] || {
+          visible: true,
+          size: 100,
+          color: 0,
+        };
         let v = { ...current };
 
         if (block.type === "show") {
@@ -366,7 +354,6 @@ export default function PreviewArea({
           v.visible = false;
         }
         if (block.type === "changeColor") {
-          // each click gives a new random color "25% effect" style
           const randomHue = Math.floor(Math.random() * 360);
           v.color = randomHue;
         }
