@@ -9,7 +9,7 @@ This project implements Motion, Looks, Controls, Multiple Sprite support, and a 
 ## 🚀 Live Demo
 
 🔗 Deployment Link:  
-> (I will add the deployed link here)
+> https://juspay-react-assignment.onrender.com/
 
 ---
 
