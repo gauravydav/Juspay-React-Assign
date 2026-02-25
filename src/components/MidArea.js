@@ -9,6 +9,72 @@ export default function MidArea() {
   const newValue = numericFields.includes(field) ? Number(value) || 0 : value;
   updateBlockOnSprite(selectedSprite.id, block.id, { [field]: newValue });
 };
+useEffect(() => {
+  if (!play) return;
+
+  const interval = setInterval(() => {
+    const angleUpdates = {};
+
+    setPositions(prev => {
+      const newPos = { ...prev };
+
+      sprites.forEach(s => {
+        if (!newPos[s.id]) {
+          newPos[s.id] = { x: s.x, y: s.y };
+        }
+
+        const hasRepeat = s.animations.some(b => b.type === "repeat");
+
+        // If there is no repeat block, run only once per Play click
+        if (!hasRepeat && hasRunOnceRef.current[s.id]) {
+          return;
+        }
+
+        let angleDelta = 0;
+
+        s.animations.forEach(block => {
+          if (block.type === "move") {
+            const steps = block.steps ?? 0;
+            newPos[s.id].x += steps;
+          }
+          if (block.type === "turn") {
+            const degrees = block.degrees ?? 0;
+            angleDelta += degrees;
+          }
+          if (block.type === "goto") {
+            newPos[s.id].x = block.x ?? newPos[s.id].x;
+            newPos[s.id].y = block.y ?? newPos[s.id].y;
+          }
+        });
+
+        // store rotation to apply in render
+        if (angleDelta !== 0) {
+          angleUpdates[s.id] = (angleUpdates[s.id] || 0) + angleDelta;
+        }
+
+        if (!hasRepeat) {
+          hasRunOnceRef.current[s.id] = true;
+        }
+      });
+
+      return newPos;
+    });
+
+    if (Object.keys(angleUpdates).length > 0) {
+      setAngles(prevAngles => {
+        const next = { ...prevAngles };
+        Object.entries(angleUpdates).forEach(([idStr, delta]) => {
+          const id = Number(idStr);
+          const current = next[id] ?? 0;
+          next[id] = current + delta;
+        });
+        return next;
+      });
+    }
+  }, 500);
+
+  return () => clearInterval(interval);
+}, [play, sprites]);
   return <div className="flex-1 h-full overflow-auto">{"mid area"} 
     <div
   className="flex-1 overflow-auto rounded-lg border border-dashed border-blue-300 bg-blue-50/40 p-2"
@@ -104,7 +170,19 @@ export default function MidArea() {
       </div>
     );
   }
-
+<div
+  style={{
+    position: "absolute",
+    left: positions[s.id]?.x || 0,
+    top: positions[s.id]?.y || 0,
+    transform: `rotate(${angles[s.id] || 0}deg)`,
+    transformOrigin: "center center",
+    transition:
+      "transform 0.35s ease-out, left 0.35s ease-out, top 0.35s ease-out",
+  }}
+>
+  <CatSprite />
+</div>
   if (block.type === "repeat") {
     return (
       <div
