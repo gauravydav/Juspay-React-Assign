@@ -132,6 +132,9 @@ This creates dynamic interaction between characters in the playground.
 ```bash
 git clone https://github.com/your-username/your-repo-name.git
 ```
+
+## 2️⃣ Run these commands
+
 ```bash
 cd your-repo-name
 npm install
