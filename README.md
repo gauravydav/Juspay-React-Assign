@@ -130,13 +130,12 @@ This creates dynamic interaction between characters in the playground.
 ## 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
+git clone https://github.com/gauravydav/Juspay-React-Assign.git
 ```
 
 ## 2️⃣ Run these commands
 
 ```bash
-cd your-repo-name
 npm install
 npm start
 ```
