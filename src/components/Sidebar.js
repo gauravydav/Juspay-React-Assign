@@ -21,6 +21,21 @@ const controlBlocks = [
 ];
   return (
     <div className="w-60 flex-none h-full overflow-y-auto flex flex-col items-start p-2 border-r border-gray-200">
+      <div className="mb-4 space-y-1">
+  {sprites.map(sprite => (
+    <button
+      key={sprite.id}
+      onClick={() => setSelectedSpriteId(sprite.id)}
+      className={`w-full text-left px-2 py-1 rounded text-xs font-medium border ${
+        sprite.id === selectedSpriteId
+          ? "bg-blue-100 border-blue-400 text-blue-800"
+          : "bg-white border-gray-200 hover:bg-gray-100 text-gray-800"
+      }`}
+    >
+      {sprite.name}
+    </button>
+  ))}
+</div>
       <div className="font-bold"> {"Events"} </div>
       <div className="flex flex-row flex-wrap bg-yellow-500 text-white px-2 py-1 my-2 text-sm cursor-pointer">
         {"When "}
@@ -77,6 +92,13 @@ const controlBlocks = [
       {label}
     </div>
   ))}
+  <button
+  className="flex items-center space-x-1 text-xs px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded shadow-sm"
+  onClick={addSprite}
+>
+  <span>+</span>
+  <span>Add</span>
+</button>
 </div>
     </div>
   );
