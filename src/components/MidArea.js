@@ -75,6 +75,7 @@ useEffect(() => {
 
   return () => clearInterval(interval);
 }, [play, sprites]);
+const numericFields = ["steps", "degrees", "x", "y", "seconds"];
   return <div className="flex-1 h-full overflow-auto">{"mid area"} 
     <div
   className="flex-1 overflow-auto rounded-lg border border-dashed border-blue-300 bg-blue-50/40 p-2"

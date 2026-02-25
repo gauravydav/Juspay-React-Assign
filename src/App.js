@@ -5,10 +5,12 @@ import PreviewArea from "./components/PreviewArea";
 
 export default function App() {
   // top-level state
+  
 const [sprites, setSprites] = useState([
   { id: 1, name: "Cat 1", x: 50, y: 50, animations: [] },
   { id: 2, name: "Cat 2", x: 220, y: 80, animations: [] },
 ]);
+
 const [selectedSpriteId, setSelectedSpriteId] = useState(1);
 const [play, setPlay] = useState(false);
 const addBlockToSprite = (spriteId, block) => {

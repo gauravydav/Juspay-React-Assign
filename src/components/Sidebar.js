@@ -2,14 +2,16 @@ import React from "react";
 import Icon from "./Icon";
 
 export default function Sidebar() {
-  const motionBlocks = [
-  { label: "Move 10 steps", block: { type: "move", steps: 10 } },
-  { label: "Turn 15 degrees", block: { type: "turn", degrees: 15 } },
+const looksBlocks = [
   {
-    label: "Go to x: 0 y: 0",
-    block: { type: "goto", x: 0, y: 0 },
+    label: 'Say "Hello!" for 2 seconds',
+    block: { type: "say", message: "Hello!", seconds: 2 },
   },
-  
+  {
+    label: 'Think "Hmm..." for 2 seconds',
+    block: { type: "think", message: "Hmm...", seconds: 2 },
+  },
+  // keep your other looks blocks if you have them
 ];
 const controlBlocks = [
   {
@@ -54,6 +56,23 @@ const controlBlocks = [
       draggable
       onDragStart={e => handleDragStart(e, block)}
       className="flex flex-row flex-wrap bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 my-1 text-xs cursor-move rounded shadow-sm select-none"
+    >
+      {label}
+    </div>
+  ))}
+</div>
+<div className="mt-3">
+  <div className="flex items-center space-x-2 mb-1">
+    <span className="font-semibold text-gray-800 text-xs uppercase tracking-wide">
+      Looks
+    </span>
+  </div>
+  {looksBlocks.map(({ label, block }) => (
+    <div
+      key={label}
+      draggable
+      onDragStart={e => handleDragStart(e, block)}
+      className="flex flex-row flex-wrap bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 my-1 text-xs cursor-move rounded shadow-sm select-none"
     >
       {label}
     </div>
